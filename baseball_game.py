@@ -31,8 +31,11 @@ def is_digit(user_input_number):
     # '''
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당
-    result = None
-
+    result = True
+    for letter in user_input_number:
+        if letter < '0' or letter > '9':
+            result = False
+            break
     # ==================================
     return result
 
@@ -58,8 +61,10 @@ def is_between_100_and_999(user_input_number):
     # '''
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당
-    result = None
-
+    result = False
+    input_as_int = int(user_input_number)
+    if input_as_int >= 100 and input_as_int < 1000:
+        result = True
     # ==================================
     return result
 
@@ -87,7 +92,11 @@ def is_duplicated_number(three_digit):
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당
 
-    result = None
+    result = False
+    if three_digit[0] == three_digit[1] or \
+        three_digit[1] == three_digit[2] or \
+        three_digit[0] == three_digit[2]:
+        result = True
     # ==================================
     return result
 
@@ -115,7 +124,13 @@ def is_validated_number(user_input_number):
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당
 
-    result = None
+    result = False
+    if user_input_number == "":
+        result = False
+    elif is_digit(user_input_number) and \
+        is_between_100_and_999(user_input_number) and \
+        not is_duplicated_number(user_input_number):
+        result = True
     # ==================================
     return result
 
@@ -141,8 +156,10 @@ def get_not_duplicated_three_digit_number():
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당
     # get_random_number() 함수를 사용하여 random number 생성
-
-    result = None
+    
+    result = 0
+    while not is_validated_number(str(result)):
+        result = get_random_number() 
     # ==================================
     return result
 
@@ -175,7 +192,15 @@ def get_strikes_or_ball(user_input_number, random_number):
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당
 
-    result = None
+    strike = 0
+    ball = 0
+    for i in range(3):
+        if user_input_number[i] in random_number:
+            if user_input_number[i] == random_number[i]:
+                strike += 1
+            else:
+                ball += 1
+    result = [strike, ball]
     # ==================================
     return result
 
@@ -207,7 +232,10 @@ def is_yes(one_more_input):
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당
 
-    result = None
+    result = False
+    input_as_lower = one_more_input.lower()
+    if input_as_lower == 'yes' or input_as_lower == 'y':
+        result = True
     # ==================================
     return result
 
@@ -239,21 +267,50 @@ def is_no(one_more_input):
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당
 
-    result = None
+    result = False
+    input_as_lower = one_more_input.lower()
+    if input_as_lower == 'no' or input_as_lower == 'n':
+        result = True
     # ==================================
     return result
 
 
 def main():
     print("Play Baseball")
-    user_input = 999
-    random_number = str(get_not_duplicated_three_digit_number())
-    print("Random Number is : ", random_number)
-    # ===Modify codes below=============
-    # 위의 코드를 포함하여 자유로운 수정이 가능함
+    
+    user_input = "Y"
+    zero_input = False
+    while is_yes(user_input) and not zero_input:
+        user_input = "999"
+        random_number = str(get_not_duplicated_three_digit_number())
 
+        print("Random Number is : ", random_number)
+        # ===Modify codes below=============
+        # 위의 코드를 포함하여 자유로운 수정이 가능함
+        while user_input != random_number:
+            user_input = input("Input guess number : ")
+            while not is_validated_number(user_input):
+                if user_input == "0":
+                    zero_input = True
+                    break
+                print("Wrong Input, Input again")
+                user_input = input("Input guess number : ")
+            if zero_input:
+                break
+            strike, ball = get_strikes_or_ball(user_input, random_number)
+            print(f"Strikes : {strike} , Balls : {ball}")
 
-    # ==================================
+        if zero_input:
+            break
+
+        user_input = input("You win, one more(Y/N)?")
+        while not is_yes(user_input) and not is_no(user_input):
+            if user_input == "0":
+                zero_input = True
+                break
+            print("Wrong Input, Input again")
+            user_input = input("You win, one more(Y/N)?")
+    
     print("Thank you for using this program")
     print("End of the Game")
 
